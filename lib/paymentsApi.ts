@@ -16,7 +16,6 @@ export interface CreatePaymentPayload {
     amount: string
     currency: string
   }
-  verification: string
   source: {
     id: string
     type: string

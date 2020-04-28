@@ -10,12 +10,6 @@
 
           <v-text-field v-model="formData.amount" label="Amount" />
 
-          <v-select
-            v-model="formData.verification"
-            :items="verificationMethods"
-            label="Verification Method"
-          />
-
           <v-text-field v-if="cvvRequired" v-model="formData.cvv" label="CVV" />
 
           <v-text-field v-model="formData.phoneNumber" label="Phone" />
@@ -50,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 import { mapGetters } from 'vuex'
 import uuidv4 from 'uuid/v4'
 import openPGP from '@/lib/openpgp'
@@ -77,13 +71,11 @@ export default class CreatePaymentClass extends Vue {
   cvvRequired = true
   formData = {
     sourceId: '',
-    verification: 'cvv',
     amount: '0.00',
     cvv: '',
     phoneNumber: '',
     email: ''
   }
-  verificationMethods = ['none', 'cvv']
   required = [(v: string) => !!v || 'Field is required']
   error = {}
   loading = false
@@ -95,16 +87,6 @@ export default class CreatePaymentClass extends Vue {
         statusCode: 404,
         message: 'This endpoint is not available for marketplaces'
       })
-    }
-  }
-
-  @Watch('formData.verification', { immediate: true })
-  onChildChanged(val: string) {
-    if (val === 'none') {
-      this.cvvRequired = false
-    }
-    if (val === 'cvv') {
-      this.cvvRequired = true
     }
   }
 
@@ -128,7 +110,6 @@ export default class CreatePaymentClass extends Vue {
     const payload: CreatePaymentPayload = {
       idempotencyKey: uuidv4(),
       amount: amountDetail,
-      verification: this.formData.verification,
       source: sourceDetails,
       keyId: '',
       encryptedData: '',
